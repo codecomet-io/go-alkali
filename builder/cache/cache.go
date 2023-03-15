@@ -30,6 +30,7 @@ func (o *Options) ToClientImport() []client.CacheOptionsEntry {
 	for _, v := range o.Import {
 		ret = append(ret, v.ToImport())
 	}
+
 	return ret
 }
 
@@ -38,6 +39,7 @@ func (o *Options) ToClientExport() []client.CacheOptionsEntry {
 	for _, v := range o.Import {
 		ret = append(ret, v.ToExport())
 	}
+
 	return ret
 }
 

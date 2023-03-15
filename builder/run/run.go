@@ -9,7 +9,7 @@ import (
 )
 
 func New(proto *bytes.Buffer /*state llb.State*/) *Data {
-	bd := &Data{
+	return &Data{
 		// state: state,
 
 		Protobuf: proto, // new(bytes.Buffer),
@@ -17,8 +17,6 @@ func New(proto *bytes.Buffer /*state llb.State*/) *Data {
 		Trace:    new(bytes.Buffer),
 		Meta:     new(bytes.Buffer),
 	}
-	// _ = wrapllb.Write(state, bd.Protobuf)
-	return bd
 }
 
 type Data struct {
@@ -33,18 +31,24 @@ type Data struct {
 
 func (o *Data) GetJSON() *bytes.Buffer {
 	out := new(bytes.Buffer)
+
 	if o.Protobuf == nil {
 		log.Fatal().Msg("Uninitialized protobuf buffer")
 	}
+
 	_ = wrapllb.ToJSON(o.Protobuf, out)
+
 	return out
 }
 
 func (o *Data) GetDOT() *bytes.Buffer {
 	out := new(bytes.Buffer)
+
 	if o.Protobuf == nil {
 		log.Fatal().Msg("Uninitialized protobuf buffer")
 	}
+
 	_ = wrapllb.ToDOT(o.Protobuf, out)
+
 	return out
 }

@@ -15,6 +15,8 @@ func GetSocket() *url.URL {
 	if sock == "" {
 		sock = lima_cli.New(filepath.Join(config.Get().GetRunRoot(), "vm"), "runner").GetSock()
 	}
+
 	u, _ := url.Parse(sock)
+
 	return u
 }

@@ -12,6 +12,9 @@ import (
 
 type exporterType string
 
+// XXX make this configurable so that we can honor config from embedders.
+const defaultDirPerms = 0o700
+
 const (
 	typeImage exporterType = client.ExporterImage
 	typeLocal exporterType = client.ExporterLocal
@@ -19,7 +22,7 @@ const (
 	typeOCI   exporterType = client.ExporterOCI
 
 	// Not supported.
-	typeDocker exporterType = client.ExporterDocker
+	// typeDocker exporterType = client.ExporterDocker
 )
 
 type Entry interface {
@@ -32,34 +35,41 @@ type Local struct {
 }
 
 func (o *Local) GetEntry() client.ExportEntry {
-	ce := client.ExportEntry{
+	clientExport := client.ExportEntry{
 		Type:      string(typeLocal),
 		Attrs:     map[string]string{},
 		OutputDir: o.Path,
 	}
+
 	if o.OCI {
-		ce.Type = string(typeOCI)
-		ce.Attrs["tar"] = "false"
+		clientExport.Type = string(typeOCI)
+		clientExport.Attrs["tar"] = "false"
 	}
+
 	if strings.HasSuffix(o.Path, ".tar") {
-		if ce.Type == string(typeLocal) {
-			ce.Type = string(typeTar)
+		if clientExport.Type == string(typeLocal) {
+			clientExport.Type = string(typeTar)
 		} else {
-			ce.Attrs["tar"] = "true"
+			clientExport.Attrs["tar"] = "true"
 		}
-		ce.OutputDir = ""
-		ce.Output = func(m map[string]string) (io.WriteCloser, error) {
-			if err := os.MkdirAll(path.Dir(o.Path), 0o700); err != nil {
+
+		clientExport.OutputDir = ""
+		clientExport.Output = func(m map[string]string) (io.WriteCloser, error) {
+			if err := os.MkdirAll(path.Dir(o.Path), defaultDirPerms); err != nil {
 				return nil, err
 			}
+
 			ret, err := os.Create(o.Path)
+
 			if err != nil {
 				return nil, err
 			}
+
 			return io.WriteCloser(ret), nil
 		}
 	}
-	return ce
+
+	return clientExport
 }
 
 type Image struct {
@@ -76,14 +86,20 @@ type Image struct {
 		unpack=true: unpack image after creation (for use with containerd)
 		dangling-name-prefix=<value>: name image with prefix@<digest>, used for anonymous images
 		name-canonical=true: add additional canonical name name@<digest>
-		compression=<uncompressed|gzip|estargz|zstd>: choose compression type for layers newly created and cached, gzip is default value. estargz should be used with oci-mediatypes=true.
+		compression=<uncompressed|gzip|estargz|zstd>: choose compression type for layers newly created and
+			cached, gzip is default value. estargz should be used with oci-mediatypes=true.
 		compression-level=<value>: compression level for gzip, estargz (0-9) and zstd (0-22)
 		force-compression=true: forcefully apply compression option to all layers (including already existing layers)
-		store=true: store the result images to the worker's (e.g. containerd) image store as well as ensures that the image has all blobs in the content store (default true). Ignored if the worker doesn't have image store (e.g. OCI worker).
+		store=true: store the result images to the worker's (e.g. containerd) image store as well as ensures that the
+			image has all blobs in the content store (default true). Ignored if the worker doesn't have image store
+			(e.g. OCI worker).
 		annotation.<key>=<value>: attach an annotation with the respective key and value to the built image
-		Using the extended syntaxes, annotation-<type>.<key>=<value>, annotation[<platform>].<key>=<value> and both combined with annotation-<type>[<platform>].<key>=<value>, allows configuring exactly where to attach the annotation.
-		<type> specifies what object to attach to, and can be any of manifest (the default), manifest-descriptor, index and index-descriptor
-		<platform> specifies which objects to attach to (by default, all), and is the same key passed into the platform opt, see docs/multi-platform.md.
+		Using the extended syntaxes, annotation-<type>.<key>=<value>, annotation[<platform>].<key>=<value> and both
+			combined with annotation-<type>[<platform>].<key>=<value>, allows configuring exactly where to attach the annotation.
+		<type> specifies what object to attach to, and can be any of manifest (the default), manifest-descriptor,
+			index and index-descriptor
+		<platform> specifies which objects to attach to (by default, all), and is the same key passed into the platform
+			opt, see docs/multi-platform.md.
 		See docs/annotations.md for more details.
 	*/
 }

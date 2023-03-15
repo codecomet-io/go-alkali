@@ -68,6 +68,7 @@ func (o *Options) GetAttachable() ([]session.Attachable, error) {
 		if err != nil {
 			return nil, err
 		}
+
 		attachable = append(attachable, sp)
 	} else {
 		log.Error().Msg("SSH_AUTH_SOCK is not set and you have not specified any SSH agent configuration. " +
@@ -80,6 +81,7 @@ func (o *Options) GetAttachable() ([]session.Attachable, error) {
 		if err != nil {
 			return nil, err
 		}
+
 		attachable = append(attachable, secretsprovider.NewSecretProvider(store))
 	}
 	return attachable, nil
@@ -87,9 +89,11 @@ func (o *Options) GetAttachable() ([]session.Attachable, error) {
 
 func toggle(slice []Entitlement, value Entitlement, allow bool) []Entitlement {
 	position := -1
+
 	for p, v := range slice {
 		if v == value {
 			position = p
+
 			break
 		}
 	}

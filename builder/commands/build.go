@@ -37,8 +37,10 @@ func read(r io.Reader, noCache bool) (*llb.Definition, error) {
 			if err := (&op).Unmarshal(dt); err != nil {
 				return nil, errors.Wrap(err, "failed to parse llb proto op")
 			}
+
 			dgst := digest.FromBytes(dt)
 			opMetadata, ok := def.Metadata[dgst]
+
 			if !ok {
 				opMetadata = pb.OpMetadata{}
 			}
@@ -67,7 +69,7 @@ func Build(
 	// Get registry authenticators
 	attachable = append(attachable, auth.GetAttachable()...)
 
-	eg, ctx := errgroup.WithContext(bo.Ctx)
+	eg, ctx := errgroup.WithContext(context.TODO())
 
 	// ref := identity.NewID()
 
@@ -229,5 +231,5 @@ func writeMetadataFile(filename string, exporterResponse map[string]string) erro
 	if err != nil {
 		return err
 	}
-	return filesystem.WriteFile(filename, b, 0o666)
+	return filesystem.WriteFile(filename, b, 0o600)
 }

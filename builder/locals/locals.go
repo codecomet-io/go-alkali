@@ -4,9 +4,9 @@ import (
 	"strconv"
 )
 
-var localSingleton *LocalsRegister
+var localSingleton *localsRegister //nolint:gochecknoglobals
 
-type LocalsRegister struct {
+type localsRegister struct {
 	x       int
 	locals  map[string]string
 	reverse map[string]string
@@ -14,12 +14,13 @@ type LocalsRegister struct {
 
 func Get(path string) string {
 	if localSingleton == nil {
-		localSingleton = &LocalsRegister{
+		localSingleton = &localsRegister{
 			x:       0,
 			locals:  make(map[string]string),
 			reverse: make(map[string]string),
 		}
 	}
+
 	if _, ok := localSingleton.locals[path]; !ok {
 		localSingleton.x++
 		localSingleton.locals[path] = "folder" + strconv.Itoa(localSingleton.x)
@@ -31,7 +32,8 @@ func Get(path string) string {
 
 func Dump() map[string]string {
 	if localSingleton == nil {
-		localSingleton = &LocalsRegister{}
+		localSingleton = &localsRegister{}
 	}
+
 	return localSingleton.reverse
 }

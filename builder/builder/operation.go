@@ -2,8 +2,6 @@ package builder
 
 import (
 	"bytes"
-	"context"
-
 	"github.com/codecomet-io/go-alkali/builder/build"
 	"github.com/codecomet-io/go-alkali/builder/cache"
 	"github.com/codecomet-io/go-alkali/builder/exporter"
@@ -21,7 +19,6 @@ type Operation struct {
 	Run         *run.Data
 
 	// XXX
-	Ctx      context.Context
 	Progress string
 }
 
@@ -43,8 +40,5 @@ func NewOperation() *Operation {
 		},
 		Export: []exporter.Entry{},
 		Run:    run.New(nil),
-
-		// XXX
-		Ctx: context.TODO(),
 	}
 }
