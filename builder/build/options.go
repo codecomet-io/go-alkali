@@ -84,6 +84,7 @@ func (o *Options) GetAttachable() ([]session.Attachable, error) {
 
 		attachable = append(attachable, secretsprovider.NewSecretProvider(store))
 	}
+
 	return attachable, nil
 }
 
