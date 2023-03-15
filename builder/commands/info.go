@@ -12,20 +12,17 @@ import (
 
 func Info(ctx context.Context, node *builder.Node, writer io.Writer, format string) error {
 	client, err := getClient(node) //nolint:contextcheck
-
 	if err != nil {
 		return err
 	}
 
 	res, err := client.Info(ctx)
-
 	if err != nil {
 		return err
 	}
 
 	if format != "" {
 		tmpl, err := parseTemplate(format)
-
 		if err != nil {
 			return err
 		}

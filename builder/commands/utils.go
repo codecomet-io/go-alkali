@@ -3,9 +3,10 @@ package commands
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/rs/zerolog/log"
 	"strings"
 	"text/template"
+
+	"github.com/rs/zerolog/log"
 )
 
 func parseTemplate(format string) (*template.Template, error) {
