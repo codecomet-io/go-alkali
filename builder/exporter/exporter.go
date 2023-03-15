@@ -22,7 +22,7 @@ const (
 	typeOCI   exporterType = client.ExporterOCI
 
 	// Not supported.
-	// typeDocker exporterType = client.ExporterDocker
+	// typeDocker exporterType = client.ExporterDocker.
 )
 
 type Entry interface {
@@ -60,7 +60,6 @@ func (o *Local) GetEntry() client.ExportEntry {
 			}
 
 			ret, err := os.Create(o.Path)
-
 			if err != nil {
 				return nil, err
 			}
