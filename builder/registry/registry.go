@@ -10,7 +10,7 @@ import (
 	"github.com/moby/buildkit/session/auth/authprovider"
 )
 
-// TODO figure out how to get mTLS for registries
+// TODO figure out how to get mTLS for registries.
 func New() *Authenticator {
 	return &Authenticator{
 		dckr: config.LoadDefaultConfigFile(os.Stderr), // &configfile.ConfigFile{},

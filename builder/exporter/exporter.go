@@ -18,7 +18,7 @@ const (
 	typeTar   exporterType = client.ExporterTar
 	typeOCI   exporterType = client.ExporterOCI
 
-	// Not supported
+	// Not supported.
 	typeDocker exporterType = client.ExporterDocker
 )
 

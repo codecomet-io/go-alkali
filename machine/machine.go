@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
-	// XXX Need to rip these out somehow and get them here
+	// XXX Need to rip these out somehow and get them here.
 	"github.com/codecomet-io/isovaline/isovaline/config"
 	lima_cli "github.com/codecomet-io/isovaline/upstream/lima-cli"
 )

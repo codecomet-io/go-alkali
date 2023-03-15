@@ -5,11 +5,11 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"github.com/codecomet-io/go-alkali/builder/builder"
 	"io"
 	"os"
 	"strings"
 
+	"github.com/codecomet-io/go-alkali/builder/builder"
 	"github.com/codecomet-io/go-alkali/builder/locals"
 	"github.com/codecomet-io/go-alkali/builder/wrapllb"
 	"github.com/codecomet-io/go-core/filesystem"
@@ -229,5 +229,5 @@ func writeMetadataFile(filename string, exporterResponse map[string]string) erro
 	if err != nil {
 		return err
 	}
-	return filesystem.WriteFile(filename, b, 0666)
+	return filesystem.WriteFile(filename, b, 0o666)
 }
