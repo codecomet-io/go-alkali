@@ -18,22 +18,20 @@ import (
 const defaultTabWidth = 8
 
 func Workers(ctx context.Context, node *builder.Node, writer io.Writer, verbose bool,
-	format string, filter []string) error {
+	format string, filter []string,
+) error {
 	cli, err := getClient(node) //nolint:contextcheck
-
 	if err != nil {
 		return err
 	}
 
 	workers, err := cli.ListWorkers(ctx, client.WithFilter(filter))
-
 	if err != nil {
 		return err
 	}
 
 	if format != "" {
 		tmpl, err := parseTemplate(format)
-
 		if err != nil {
 			return err
 		}
