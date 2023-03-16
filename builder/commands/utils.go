@@ -6,7 +6,7 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/rs/zerolog/log"
+	"github.com/codecomet-io/go-core/log"
 )
 
 func parseTemplate(format string) (*template.Template, error) {

@@ -28,5 +28,5 @@ linters:
     - cyclop # who cares! :D
     # Not now
     - paralleltest
-    # Temp
+    # Temporary out
     - wrapcheck

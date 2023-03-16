@@ -30,6 +30,10 @@ func Get(path string) string {
 	return localSingleton.locals[path]
 }
 
+func Reset() {
+	localSingleton = nil
+}
+
 func Dump() map[string]string {
 	if localSingleton == nil {
 		localSingleton = &localsRegister{}

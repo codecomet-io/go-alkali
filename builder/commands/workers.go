@@ -4,15 +4,14 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"path"
 	"sort"
 	"strings"
 	"text/tabwriter"
 
 	"github.com/codecomet-io/go-alkali/builder/builder"
-	"github.com/containerd/containerd/platforms"
 	"github.com/moby/buildkit/client"
 	ocispecs "github.com/opencontainers/image-spec/specs-go/v1"
-	"github.com/tonistiigi/units"
 )
 
 const defaultTabWidth = 8
@@ -82,7 +81,7 @@ func printWorkersVerbose(tabWriter *tabwriter.Writer, winfo []*client.WorkerInfo
 			}
 
 			if rule.KeepBytes > 0 {
-				fmt.Fprintf(tabWriter, "\tKeep Bytes:\t%g\n", units.Bytes(rule.KeepBytes))
+				fmt.Fprintf(tabWriter, "\tKeep Bytes:\t%g\n", rule.KeepBytes)
 			}
 		}
 
@@ -120,8 +119,78 @@ func sortedKeys(m map[string]string) []string {
 func joinPlatforms(p []ocispecs.Platform) string {
 	str := make([]string, 0, len(p))
 	for _, pp := range p {
-		str = append(str, platforms.Format(platforms.Normalize(pp)))
+		// XXX normalizing and formatting here makes no sense
+		// str = append(str, platforms.Format(normalize(pp)))
+		str = append(str, path.Join(pp.OS, pp.Architecture, pp.Variant))
 	}
 
 	return strings.Join(str, ",")
 }
+
+/*
+func format(platform ocispecs.Platform) string {
+	if platform.OS == "" {
+		return "unknown"
+	}
+
+	return path.Join(platform.OS, platform.Architecture, platform.Variant)
+}
+
+// XXX obviously the host platform is NOT necessarily the daemon platform, so, this stuff here is just faulty
+func normalize(platform ocispecs.Platform) ocispecs.Platform {
+	platform.OS = normalizeOS(platform.OS)
+	platform.Architecture, platform.Variant = normalizeArch(platform.Architecture, platform.Variant)
+
+	return platform
+}
+
+func normalizeOS(os string) string {
+	if os == "" {
+		return runtime.GOOS
+	}
+	os = strings.ToLower(os)
+
+	switch os {
+	case "macos":
+		os = "darwin"
+	}
+	return os
+}
+
+func normalizeArch(arch, variant string) (string, string) {
+	arch, variant = strings.ToLower(arch), strings.ToLower(variant)
+	switch arch {
+	case "i386":
+		arch = "386"
+		variant = ""
+	case "x86_64", "x86-64", "amd64":
+		arch = "amd64"
+		if variant == "v1" {
+			variant = ""
+		}
+	case "aarch64", "arm64":
+		arch = "arm64"
+		switch variant {
+		case "8", "v8":
+			variant = ""
+		}
+	case "armhf":
+		arch = "arm"
+		variant = "v7"
+	case "armel":
+		arch = "arm"
+		variant = "v6"
+	case "arm":
+		switch variant {
+		case "", "7":
+			variant = "v7"
+		case "5", "6", "8":
+			variant = "v" + variant
+		}
+	}
+
+	return arch, variant
+}
+
+
+*/

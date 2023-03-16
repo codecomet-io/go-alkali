@@ -2,17 +2,14 @@ package run
 
 import (
 	"bytes"
-
-	"github.com/codecomet-io/go-alkali/builder/wrapllb"
+	"encoding/json"
 	"github.com/codecomet-io/go-core/log"
 	"github.com/moby/buildkit/identity"
 )
 
-func New(proto *bytes.Buffer /*state llb.State*/) *Data {
+func New(proto *bytes.Buffer) *Data {
 	return &Data{
-		// state: state,
-
-		Protobuf: proto, // new(bytes.Buffer),
+		Protobuf: proto,
 		ID:       identity.NewID(),
 		Trace:    new(bytes.Buffer),
 		Meta:     new(bytes.Buffer),
@@ -20,13 +17,10 @@ func New(proto *bytes.Buffer /*state llb.State*/) *Data {
 }
 
 type Data struct {
-	// state llb.State
-
 	ID       string
 	Trace    *bytes.Buffer
 	Protobuf *bytes.Buffer
 	Meta     *bytes.Buffer
-	// JSON     io.ReadWriter
 }
 
 func (o *Data) GetJSON() *bytes.Buffer {
@@ -36,7 +30,18 @@ func (o *Data) GetJSON() *bytes.Buffer {
 		log.Fatal().Msg("Uninitialized protobuf buffer")
 	}
 
-	_ = wrapllb.ToJSON(o.Protobuf, out)
+	ops, err := readLLB(o.Protobuf)
+	if err != nil {
+		log.Fatal().Msg("Failed reading protobuf")
+	}
+
+	enc := json.NewEncoder(out)
+
+	for _, op := range ops {
+		if err := enc.Encode(op); err != nil {
+			log.Fatal().Msg("Failed json encoding op")
+		}
+	}
 
 	return out
 }
@@ -48,7 +53,7 @@ func (o *Data) GetDOT() *bytes.Buffer {
 		log.Fatal().Msg("Uninitialized protobuf buffer")
 	}
 
-	_ = wrapllb.ToDOT(o.Protobuf, out)
+	_ = toDOT(o.Protobuf, out)
 
 	return out
 }

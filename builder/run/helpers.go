@@ -1,12 +1,11 @@
-package wrapllb
+package run
 
 import (
-	"encoding/json"
 	"fmt"
+	"github.com/moby/buildkit/client/llb"
 	"io"
 	"strings"
 
-	"github.com/moby/buildkit/client/llb"
 	"github.com/moby/buildkit/solver/pb"
 	"github.com/opencontainers/go-digest"
 )
@@ -58,24 +57,7 @@ func readLLB(reader io.Reader) ([]llbOp, error) {
 	return ops, nil
 }
 
-func ToJSON(reader io.Reader, writer io.Writer) error {
-	ops, err := readLLB(reader)
-	if err != nil {
-		return err
-	}
-
-	enc := json.NewEncoder(writer)
-
-	for _, op := range ops {
-		if err := enc.Encode(op); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-func ToDOT(reader io.Reader, writer io.Writer) error {
+func toDOT(reader io.Reader, writer io.Writer) error {
 	ops, err := readLLB(reader)
 	if err != nil {
 		return err

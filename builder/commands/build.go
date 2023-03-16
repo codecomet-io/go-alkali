@@ -11,7 +11,7 @@ import (
 
 	"github.com/codecomet-io/go-alkali/builder/builder"
 	"github.com/codecomet-io/go-alkali/builder/locals"
-	"github.com/codecomet-io/go-alkali/builder/wrapllb"
+	"github.com/codecomet-io/go-alkali/builder/run"
 	"github.com/codecomet-io/go-core/filesystem"
 	"github.com/codecomet-io/go-core/log"
 	"github.com/moby/buildkit/client"
@@ -20,22 +20,21 @@ import (
 	"github.com/moby/buildkit/solver/pb"
 	"github.com/moby/buildkit/util/progress/progresswriter"
 	digest "github.com/opencontainers/go-digest"
-	"github.com/pkg/errors"
 	"golang.org/x/sync/errgroup"
 )
 
 func read(r io.Reader, noCache bool) (*llb.Definition, error) {
-	def, err := wrapllb.ToDefinition(r)
+	def, err := run.ToDefinition(r)
+
 	if err != nil {
 		return nil, err
 	}
 
-	// XXX this feels really bizarre - lets hook that BEFORE we send it over the wire
 	if noCache {
 		for _, dt := range def.Def {
 			var op pb.Op
 			if err := (&op).Unmarshal(dt); err != nil {
-				return nil, errors.Wrap(err, "failed to parse llb proto op")
+				return nil, fmt.Errorf("failed to parse llb proto op %w", err)
 			}
 
 			dgst := digest.FromBytes(dt)
@@ -49,65 +48,61 @@ func read(r io.Reader, noCache bool) (*llb.Definition, error) {
 			def.Metadata[dgst] = c.Metadata
 		}
 	}
+
 	return def, nil
 }
 
-func Build(
-	bo *builder.Operation,
-	reader io.Reader,
-) error {
-	c, err := getClient(bo.Node)
+func Build(ctx context.Context, bo *builder.Operation) error {
+	// Try and get a client
+	cli, err := getClient(bo.Node)
 	if err != nil {
 		log.Fatal().Err(err).Msg("Builder node is down. Cannot recover.")
 	}
 
-	auth := bo.Credentials
-	traceEnc := json.NewEncoder(bo.Run.Trace)
-
-	// Get SSH and Secretes
-	attachable, _ := bo.Options.GetAttachable()
-	// Get registry authenticators
-	attachable = append(attachable, auth.GetAttachable()...)
-
-	eg, ctx := errgroup.WithContext(context.TODO())
-
-	// ref := identity.NewID()
-
-	ce := []client.ExportEntry{}
+	// Get exporters
+	exporters := []client.ExportEntry{}
 	for _, v := range bo.Export {
-		ce = append(ce, v.GetEntry())
+		exporters = append(exporters, v.GetEntry())
 	}
+
+	// Get SSH and Secrets
+	attachable, _ := bo.Options.GetAttachable()
+	// Get credentials
+	auth := bo.Credentials.GetAttachable()
+	attachable = append(attachable, auth...)
+
+	// Create buildkit solve options
 	solveOpt := client.SolveOpt{
-		Exports: ce,
-		// LocalDirs is set later
-		Frontend: "", // bo.Frontend,
-		// FrontendAttrs is set later
-		// OCILayouts is set later
+		Exports:             exporters,
 		CacheExports:        bo.Cache.ToClientExport(),
 		CacheImports:        bo.Cache.ToClientImport(),
 		Session:             attachable,
 		AllowedEntitlements: bo.Options.GetEntitlements(),
-		// SourcePolicy:        srcPol,
-		Ref:       bo.Run.ID,
-		LocalDirs: locals.Dump(),
+		Ref:                 bo.Run.ID,
+		LocalDirs:           locals.Dump(),
 	}
 
-	// solveOpt.OCIStores, err = build.ParseOCILayout(bo.OciLayout)
-	// if err != nil {
-	//	return errors.Wrap(err, "invalid oci-layout")
-	//}
+	// Get tracer buffer
+	traceEnc := json.NewEncoder(bo.Run.Trace)
 
+	// Get error group
+	eg, ctx := errgroup.WithContext(ctx)
+
+	// Read protobuf into a definition
 	var def *llb.Definition
-	def, err = read(reader, bo.Cache.NoCache)
+
+	def, err = read(bo.Run.Protobuf, bo.Cache.NoCache)
 	if err != nil {
 		return err
 	}
+
 	if len(def.Def) == 0 {
-		return errors.Errorf("empty definition sent to build")
+		return fmt.Errorf("empty definition sent to build")
 	}
 
 	// not using shared context to not disrupt display but let is finish reporting errors
 	pw, err := progresswriter.NewPrinter(context.TODO(), os.Stderr, bo.Progress)
+
 	if err != nil {
 		return err
 	}
@@ -124,9 +119,11 @@ func Build(
 			return nil
 		})
 	}
+
 	mw := progresswriter.NewMultiWriter(pw)
 
 	var writers []progresswriter.Writer
+
 	for _, at := range attachable {
 		if s, ok := at.(interface {
 			SetLogger(progresswriter.Logger)
@@ -152,17 +149,18 @@ func Build(
 			Frontend:    solveOpt.Frontend,
 			FrontendOpt: solveOpt.FrontendAttrs,
 		}
+
 		if def != nil {
 			sreq.Definition = def.ToPB()
 		}
-		resp, err := c.Build(ctx, solveOpt, "buildctl", func(ctx context.Context, c gateway.Client) (*gateway.Result, error) {
+		resp, err := cli.Build(ctx, solveOpt, "buildctl", func(ctx context.Context, gwClient gateway.Client) (*gateway.Result, error) {
 			_, isSubRequest := sreq.FrontendOpt["requestid"]
 			if isSubRequest {
 				if _, ok := sreq.FrontendOpt["frontend.caps"]; !ok {
 					sreq.FrontendOpt["frontend.caps"] = "moby.buildkit.frontend.subrequests"
 				}
 			}
-			res, err := c.Solve(ctx, sreq)
+			res, err := gwClient.Solve(ctx, sreq)
 			if err != nil {
 				return nil, err
 			}
