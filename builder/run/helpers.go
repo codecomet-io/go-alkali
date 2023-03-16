@@ -2,10 +2,10 @@ package run
 
 import (
 	"fmt"
-	"github.com/moby/buildkit/client/llb"
 	"io"
 	"strings"
 
+	"github.com/moby/buildkit/client/llb"
 	"github.com/moby/buildkit/solver/pb"
 	"github.com/opencontainers/go-digest"
 )
@@ -16,7 +16,7 @@ type llbOp struct {
 	OpMetadata pb.OpMetadata `json:"opMetadata"`
 }
 
-func ToDefinition(reader io.Reader) (*llb.Definition, error) {
+func readLLB(reader io.Reader) ([]llbOp, error) {
 	// Read it
 	byt, err := io.ReadAll(reader)
 	if err != nil {
@@ -32,14 +32,6 @@ func ToDefinition(reader io.Reader) (*llb.Definition, error) {
 
 	def.FromPB(&pbDef)
 
-	return &def, nil
-}
-
-func readLLB(reader io.Reader) ([]llbOp, error) {
-	def, err := ToDefinition(reader)
-	if err != nil {
-		return nil, err
-	}
 	// Stuff everything in the ad-hoc llbOp struct
 	ops := []llbOp{}
 

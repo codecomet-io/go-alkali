@@ -4,14 +4,15 @@ import (
 	"context"
 	"encoding/base64"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"os"
 	"strings"
 
+	consts "github.com/codecomet-io/go-alkali/builder"
 	"github.com/codecomet-io/go-alkali/builder/builder"
 	"github.com/codecomet-io/go-alkali/builder/locals"
-	"github.com/codecomet-io/go-alkali/builder/run"
 	"github.com/codecomet-io/go-core/filesystem"
 	"github.com/codecomet-io/go-core/log"
 	"github.com/moby/buildkit/client"
@@ -23,104 +24,118 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-func read(r io.Reader, noCache bool) (*llb.Definition, error) {
-	def, err := run.ToDefinition(r)
+var errEmptyDefinition = errors.New("empty definition sent to build")
 
+func read(reader io.Reader, noCache bool) (*llb.Definition, error) {
+	// Read it
+	byt, err := io.ReadAll(reader)
 	if err != nil {
 		return nil, err
 	}
+	// Unmarshal into the protobuf definition
+	var pbDef pb.Definition
+	if err := pbDef.Unmarshal(byt); err != nil {
+		return nil, err
+	}
+
+	// Convert to the LLB definition
+	var def llb.Definition
+
+	def.FromPB(&pbDef)
 
 	if noCache {
-		for _, dt := range def.Def {
+		for _, definition := range def.Def {
 			var op pb.Op
-			if err := (&op).Unmarshal(dt); err != nil {
+			if err := (&op).Unmarshal(definition); err != nil {
 				return nil, fmt.Errorf("failed to parse llb proto op %w", err)
 			}
 
-			dgst := digest.FromBytes(dt)
+			dgst := digest.FromBytes(definition)
 			opMetadata, ok := def.Metadata[dgst]
 
 			if !ok {
 				opMetadata = pb.OpMetadata{}
 			}
+
 			c := llb.Constraints{Metadata: opMetadata}
 			llb.IgnoreCache(&c)
 			def.Metadata[dgst] = c.Metadata
 		}
 	}
 
-	return def, nil
+	return &def, nil
 }
 
-func Build(ctx context.Context, bo *builder.Operation) error {
+func Build(ctx context.Context, buildOp *builder.Operation) error { //nolint:gocognit
 	// Try and get a client
-	cli, err := getClient(bo.Node)
+	cli, err := getClient(ctx, buildOp.Node)
 	if err != nil {
 		log.Fatal().Err(err).Msg("Builder node is down. Cannot recover.")
 	}
 
 	// Get exporters
 	exporters := []client.ExportEntry{}
-	for _, v := range bo.Export {
+	for _, v := range buildOp.Export {
 		exporters = append(exporters, v.GetEntry())
 	}
 
 	// Get SSH and Secrets
-	attachable, _ := bo.Options.GetAttachable()
+	attachable, _ := buildOp.Options.GetAttachable()
 	// Get credentials
-	auth := bo.Credentials.GetAttachable()
+	auth := buildOp.Credentials.GetAttachable()
 	attachable = append(attachable, auth...)
 
 	// Create buildkit solve options
 	solveOpt := client.SolveOpt{
 		Exports:             exporters,
-		CacheExports:        bo.Cache.ToClientExport(),
-		CacheImports:        bo.Cache.ToClientImport(),
+		CacheExports:        buildOp.Cache.ToClientExport(),
+		CacheImports:        buildOp.Cache.ToClientImport(),
 		Session:             attachable,
-		AllowedEntitlements: bo.Options.GetEntitlements(),
-		Ref:                 bo.Run.ID,
+		AllowedEntitlements: buildOp.Options.GetEntitlements(),
+		Ref:                 buildOp.Run.ID,
 		LocalDirs:           locals.Dump(),
 	}
 
 	// Get tracer buffer
-	traceEnc := json.NewEncoder(bo.Run.Trace)
+	traceEnc := json.NewEncoder(buildOp.Run.Trace)
 
 	// Get error group
-	eg, ctx := errgroup.WithContext(ctx)
+	errGroup, ctx := errgroup.WithContext(ctx)
 
 	// Read protobuf into a definition
 	var def *llb.Definition
 
-	def, err = read(bo.Run.Protobuf, bo.Cache.NoCache)
+	def, err = read(buildOp.Run.Protobuf, buildOp.Cache.NoCache)
 	if err != nil {
 		return err
 	}
 
 	if len(def.Def) == 0 {
-		return fmt.Errorf("empty definition sent to build")
+		return errEmptyDefinition
 	}
 
 	// not using shared context to not disrupt display but let is finish reporting errors
-	pw, err := progresswriter.NewPrinter(context.TODO(), os.Stderr, bo.Progress)
-
+	progWriter, err := progresswriter.NewPrinter(context.TODO(), os.Stderr, buildOp.Progress) //nolint:contextcheck
 	if err != nil {
 		return err
 	}
 
 	if traceEnc != nil {
 		traceCh := make(chan *client.SolveStatus)
-		pw = progresswriter.Tee(pw, traceCh)
-		eg.Go(func() error {
+		progWriter = progresswriter.Tee(progWriter, traceCh)
+
+		errGroup.Go(func() error {
 			for s := range traceCh {
 				if err := traceEnc.Encode(s); err != nil {
 					return err
 				}
 			}
+
 			return nil
 		})
 	}
 
-	mw := progresswriter.NewMultiWriter(pw)
+	multiWriter := progresswriter.NewMultiWriter(progWriter)
 
 	var writers []progresswriter.Writer
 
@@ -128,17 +143,19 @@ func Build(ctx context.Context, bo *builder.Operation) error {
 		if s, ok := at.(interface {
 			SetLogger(progresswriter.Logger)
 		}); ok {
-			w := mw.WithPrefix("", false)
+			prefixedWriter := multiWriter.WithPrefix("", false)
+
 			s.SetLogger(func(s *client.SolveStatus) {
-				w.Status() <- s
+				prefixedWriter.Status() <- s
 			})
-			writers = append(writers, w)
+
+			writers = append(writers, prefixedWriter)
 		}
 	}
 
 	var subMetadata map[string][]byte
 
-	eg.Go(func() error {
+	errGroup.Go(func() error {
 		defer func() {
 			for _, w := range writers {
 				close(w.Status())
@@ -153,33 +170,34 @@ func Build(ctx context.Context, bo *builder.Operation) error {
 		if def != nil {
 			sreq.Definition = def.ToPB()
 		}
-		resp, err := cli.Build(ctx, solveOpt, "buildctl", func(ctx context.Context, gwClient gateway.Client) (*gateway.Result, error) {
-			_, isSubRequest := sreq.FrontendOpt["requestid"]
-			if isSubRequest {
-				if _, ok := sreq.FrontendOpt["frontend.caps"]; !ok {
-					sreq.FrontendOpt["frontend.caps"] = "moby.buildkit.frontend.subrequests"
+		resp, err := cli.Build(
+			ctx,
+			solveOpt,
+			"codecomet-alkali",
+			func(ctx context.Context, gwClient gateway.Client) (*gateway.Result, error) {
+				_, isSubRequest := sreq.FrontendOpt["requestid"]
+				if isSubRequest {
+					if _, ok := sreq.FrontendOpt["frontend.caps"]; !ok {
+						sreq.FrontendOpt["frontend.caps"] = "moby.buildkit.frontend.subrequests"
+					}
 				}
-			}
-			res, err := gwClient.Solve(ctx, sreq)
-			if err != nil {
-				return nil, err
-			}
-			if isSubRequest && res != nil {
-				subMetadata = res.Metadata
-			}
-			return res, err
-		}, progresswriter.ResetTime(mw.WithPrefix("", false)).Status())
+
+				res, err := gwClient.Solve(ctx, sreq)
+				if err != nil {
+					return nil, err
+				}
+
+				if isSubRequest && res != nil {
+					subMetadata = res.Metadata
+				}
+
+				return res, err
+			}, progresswriter.ResetTime(multiWriter.WithPrefix("", false)).Status())
 		if err != nil {
 			return err
 		}
-		/*
-			for k, v := range resp.ExporterResponse {
-				logrus.Debugf("exporter response: %s=%s", k, v)
-			}
 
-		*/
-
-		if /*bo.MetadataFile != "" &&*/ resp.ExporterResponse != nil {
+		if resp.ExporterResponse != nil {
 			if err := writeMetadataFile("localmeta.json", resp.ExporterResponse); err != nil {
 				return err
 			}
@@ -188,46 +206,57 @@ func Build(ctx context.Context, bo *builder.Operation) error {
 		return nil
 	})
 
-	eg.Go(func() error {
-		<-pw.Done()
-		return pw.Err()
+	errGroup.Go(func() error {
+		<-progWriter.Done()
+
+		return progWriter.Err()
 	})
 
-	if err := eg.Wait(); err != nil {
+	if err := errGroup.Wait(); err != nil {
 		return err
 	}
 
 	if txt, ok := subMetadata["result.txt"]; ok {
-		fmt.Print(string(txt))
+		fmt.Print(string(txt)) //nolint:forbidigo
 	} else {
 		for k, v := range subMetadata {
 			if strings.HasPrefix(k, "result.") {
-				fmt.Printf("%s\n%s\n", k, v)
+				fmt.Printf("%s\n%s\n", k, v) //nolint:forbidigo
 			}
 		}
 	}
+
 	return nil
 }
 
 func writeMetadataFile(filename string, exporterResponse map[string]string) error {
 	var err error
+
 	out := make(map[string]interface{})
-	for k, v := range exporterResponse {
-		dt, err := base64.StdEncoding.DecodeString(v)
+
+	for key, response := range exporterResponse {
+		decodedResponse, err := base64.StdEncoding.DecodeString(response)
 		if err != nil {
-			out[k] = v
+			out[key] = response
+
 			continue
 		}
+
 		var raw map[string]interface{}
-		if err = json.Unmarshal(dt, &raw); err != nil || len(raw) == 0 {
-			out[k] = v
+
+		if err = json.Unmarshal(decodedResponse, &raw); err != nil || len(raw) == 0 {
+			out[key] = response
+
 			continue
 		}
-		out[k] = json.RawMessage(dt)
+
+		out[key] = json.RawMessage(decodedResponse)
 	}
+
 	b, err := json.MarshalIndent(out, "", "  ")
 	if err != nil {
 		return err
 	}
-	return filesystem.WriteFile(filename, b, 0o600)
+
+	return filesystem.WriteFile(filename, b, consts.DefaultFilePerms)
 }

@@ -19,7 +19,7 @@ const defaultTabWidth = 8
 func Workers(ctx context.Context, node *builder.Node, writer io.Writer, verbose bool,
 	format string, filter []string,
 ) error {
-	cli, err := getClient(node) //nolint:contextcheck
+	cli, err := getClient(ctx, node)
 	if err != nil {
 		return err
 	}
@@ -81,7 +81,7 @@ func printWorkersVerbose(tabWriter *tabwriter.Writer, winfo []*client.WorkerInfo
 			}
 
 			if rule.KeepBytes > 0 {
-				fmt.Fprintf(tabWriter, "\tKeep Bytes:\t%g\n", rule.KeepBytes)
+				fmt.Fprintf(tabWriter, "\tKeep Bytes:\t%d\n", rule.KeepBytes)
 			}
 		}
 

@@ -11,7 +11,7 @@ import (
 )
 
 func Info(ctx context.Context, node *builder.Node, writer io.Writer, format string) error {
-	client, err := getClient(node) //nolint:contextcheck
+	client, err := getClient(ctx, node)
 	if err != nil {
 		return err
 	}

@@ -7,13 +7,11 @@ import (
 	"path"
 	"strings"
 
+	"github.com/codecomet-io/go-alkali/builder"
 	"github.com/moby/buildkit/client"
 )
 
 type exporterType string
-
-// XXX make this configurable so that we can honor config from embedders.
-const defaultDirPerms = 0o700
 
 const (
 	typeImage exporterType = client.ExporterImage
@@ -55,7 +53,7 @@ func (o *Local) GetEntry() client.ExportEntry {
 
 		clientExport.OutputDir = ""
 		clientExport.Output = func(m map[string]string) (io.WriteCloser, error) {
-			if err := os.MkdirAll(path.Dir(o.Path), defaultDirPerms); err != nil {
+			if err := os.MkdirAll(path.Dir(o.Path), builder.DefaultDirPerms); err != nil {
 				return nil, err
 			}
 

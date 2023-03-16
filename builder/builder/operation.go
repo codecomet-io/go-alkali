@@ -3,6 +3,7 @@ package builder
 import (
 	"bytes"
 
+	"github.com/codecomet-io/go-alkali/builder"
 	"github.com/codecomet-io/go-alkali/builder/build"
 	"github.com/codecomet-io/go-alkali/builder/cache"
 	"github.com/codecomet-io/go-alkali/builder/exporter"
@@ -30,7 +31,7 @@ func (o *Operation) Ingest(proto *bytes.Buffer) {
 func NewOperation() *Operation {
 	return &Operation{
 		Node: &Node{
-			ConnectionTimeout: defaultConnectionTimeout,
+			ConnectionTimeout: builder.DefaultConnectionTimeout,
 			Address:           machine.GetSocket(),
 		},
 		Credentials: registry.New(),

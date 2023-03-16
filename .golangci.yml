@@ -30,3 +30,4 @@ linters:
     - paralleltest
     # Temporary out
     - wrapcheck
+    - musttag
