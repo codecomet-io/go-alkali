@@ -9,9 +9,9 @@ import (
 	"strings"
 	"text/tabwriter"
 
+	root "github.com/codecomet-io/go-alkali/builder"
 	"github.com/codecomet-io/go-alkali/builder/builder"
 	"github.com/moby/buildkit/client"
-	ocispecs "github.com/opencontainers/image-spec/specs-go/v1"
 )
 
 const defaultTabWidth = 8
@@ -116,7 +116,7 @@ func sortedKeys(m map[string]string) []string {
 	return sorted
 }
 
-func joinPlatforms(p []ocispecs.Platform) string {
+func joinPlatforms(p []root.Platform) string {
 	str := make([]string, 0, len(p))
 	for _, pp := range p {
 		// XXX normalizing and formatting here makes no sense
