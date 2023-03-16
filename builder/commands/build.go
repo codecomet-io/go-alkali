@@ -139,19 +139,22 @@ func Build(ctx context.Context, buildOp *builder.Operation) error { //nolint:goc
 
 	var writers []progresswriter.Writer
 
-	for _, at := range attachable {
-		if s, ok := at.(interface {
-			SetLogger(progresswriter.Logger)
-		}); ok {
-			prefixedWriter := multiWriter.WithPrefix("", false)
+	// This will log events from the authenticators and ssh agent
+	/*
+		for _, at := range attachable {
+			if s, ok := at.(interface {
+				SetLogger(progresswriter.Logger)
+			}); ok {
+				prefixedWriter := multiWriter.WithPrefix("", false)
 
-			s.SetLogger(func(s *client.SolveStatus) {
-				prefixedWriter.Status() <- s
-			})
+				s.SetLogger(func(s *client.SolveStatus) {
+					prefixedWriter.Status() <- s
+				})
 
-			writers = append(writers, prefixedWriter)
+				writers = append(writers, prefixedWriter)
+			}
 		}
-	}
+	*/
 
 	var subMetadata map[string][]byte
 
