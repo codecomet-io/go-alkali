@@ -21,15 +21,6 @@ func Colors() string {
 		os.Unsetenv("NO_COLOR")
 	}
 
-	// XXX not functioning anymore since we moved to API
-	/*
-		debug := os.Getenv("CODECOMET_DEBUG")
-		if debug != "" {
-			os.Args = append(os.Args, "--progress", "plain")
-		}
-
-	*/
-
 	/*
 		const n = 20
 		builder := aec.EmptyBuilder

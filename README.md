@@ -6,7 +6,7 @@ This is not meant to provide binaries though (see [Isovaline](https://github.com
 
 ## Builder
 
-Provides a SDK to manipulate a buildkitd instance.
+Provides a SDK to implement a buildkitd client.
 
 ## Caveats & TODO
 

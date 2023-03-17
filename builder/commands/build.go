@@ -2,7 +2,6 @@ package commands
 
 import (
 	"context"
-	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -10,11 +9,8 @@ import (
 	"os"
 	"strings"
 
-	consts "github.com/codecomet-io/go-alkali/builder"
 	"github.com/codecomet-io/go-alkali/builder/builder"
 	"github.com/codecomet-io/go-alkali/builder/locals"
-	"github.com/codecomet-io/go-core/filesystem"
-	"github.com/codecomet-io/go-core/log"
 	"github.com/moby/buildkit/client"
 	"github.com/moby/buildkit/client/llb"
 	gateway "github.com/moby/buildkit/frontend/gateway/client"
@@ -66,11 +62,11 @@ func read(reader io.Reader, noCache bool) (*llb.Definition, error) {
 	return &def, nil
 }
 
-func Build(ctx context.Context, buildOp *builder.Operation) error { //nolint:gocognit
+func Run(ctx context.Context, buildOp *builder.Operation) (map[string]string, error) { //nolint:gocognit
 	// Try and get a client
 	cli, err := getClient(ctx, buildOp.Node)
 	if err != nil {
-		log.Fatal().Err(err).Msg("Builder node is down. Cannot recover.")
+		return nil, fmt.Errorf("builder node down: %w", err)
 	}
 
 	// Get exporters
@@ -107,17 +103,17 @@ func Build(ctx context.Context, buildOp *builder.Operation) error { //nolint:goc
 
 	def, err = read(buildOp.Run.Protobuf, buildOp.Cache.NoCache)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	if len(def.Def) == 0 {
-		return errEmptyDefinition
+		return nil, errEmptyDefinition
 	}
 
 	// not using shared context to not disrupt display but let is finish reporting errors
 	progWriter, err := progresswriter.NewPrinter(context.TODO(), os.Stderr, buildOp.Progress) //nolint:contextcheck
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	if traceEnc != nil {
@@ -157,6 +153,8 @@ func Build(ctx context.Context, buildOp *builder.Operation) error { //nolint:goc
 	*/
 
 	var subMetadata map[string][]byte
+
+	exportResponse := make(map[string]string)
 
 	errGroup.Go(func() error {
 		defer func() {
@@ -200,11 +198,14 @@ func Build(ctx context.Context, buildOp *builder.Operation) error { //nolint:goc
 			return err
 		}
 
-		if resp.ExporterResponse != nil {
-			if err := writeMetadataFile("localmeta.json", resp.ExporterResponse); err != nil {
-				return err
+		/*
+			if resp.ExporterResponse != nil {
+				if err := writeMetadataFile("localmeta.json", resp.ExporterResponse); err != nil {
+					return err
+				}
 			}
-		}
+		*/
+		exportResponse = resp.ExporterResponse
 
 		return nil
 	})
@@ -216,7 +217,7 @@ func Build(ctx context.Context, buildOp *builder.Operation) error { //nolint:goc
 	})
 
 	if err := errGroup.Wait(); err != nil {
-		return err
+		return nil, err
 	}
 
 	if txt, ok := subMetadata["result.txt"]; ok {
@@ -229,37 +230,5 @@ func Build(ctx context.Context, buildOp *builder.Operation) error { //nolint:goc
 		}
 	}
 
-	return nil
-}
-
-func writeMetadataFile(filename string, exporterResponse map[string]string) error {
-	var err error
-
-	out := make(map[string]interface{})
-
-	for key, response := range exporterResponse {
-		decodedResponse, err := base64.StdEncoding.DecodeString(response)
-		if err != nil {
-			out[key] = response
-
-			continue
-		}
-
-		var raw map[string]interface{}
-
-		if err = json.Unmarshal(decodedResponse, &raw); err != nil || len(raw) == 0 {
-			out[key] = response
-
-			continue
-		}
-
-		out[key] = json.RawMessage(decodedResponse)
-	}
-
-	b, err := json.MarshalIndent(out, "", "  ")
-	if err != nil {
-		return err
-	}
-
-	return filesystem.WriteFile(filename, b, consts.DefaultFilePerms)
+	return exportResponse, nil
 }
