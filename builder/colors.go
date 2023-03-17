@@ -1,6 +1,7 @@
 package builder
 
 // Stuff to be put back into isovaline commander
+
 import (
 	"fmt"
 	"os"
@@ -8,6 +9,7 @@ import (
 
 func Colors() string {
 	solarDark()
+
 	fromEnv := os.Getenv("CODECOMET_COLORS")
 	if fromEnv == "" {
 		fromEnv = solarToBk()
@@ -50,7 +52,7 @@ func Colors() string {
 			time.Sleep(100 * time.Millisecond)
 		}
 
-	*/
+	*/ //nolint:dupword
 
 	return fromEnv
 }
@@ -79,15 +81,15 @@ const (
 )
 
 var (
-	SolBodyText             string
-	SolEmphasize            string
-	SolComments             string
-	SolBackgroundHighlights string
-	SolBackground           string
-	SolError                string
-	SolWarning              string
-	SolInfo                 string
-	SolDebug                string
+	SolBodyText             string //nolint:gochecknoglobals
+	SolEmphasize            string //nolint:gochecknoglobals
+	SolComments             string //nolint:gochecknoglobals
+	SolBackgroundHighlights string //nolint:gochecknoglobals
+	SolBackground           string //nolint:gochecknoglobals
+	SolError                string //nolint:gochecknoglobals
+	SolWarning              string //nolint:gochecknoglobals
+	SolInfo                 string //nolint:gochecknoglobals
+	SolDebug                string //nolint:gochecknoglobals
 )
 
 func solarDark() {

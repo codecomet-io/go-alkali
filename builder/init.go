@@ -6,7 +6,7 @@ import (
 	"github.com/codecomet-io/go-core/log"
 )
 
-func init() {
+func init() { //nolint:gochecknoinits
 	colors := Colors()
 	err := os.Setenv("BUILDKIT_COLORS", colors)
 	if err != nil {
