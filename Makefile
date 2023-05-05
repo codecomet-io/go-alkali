@@ -5,4 +5,4 @@ lint-fix:
 	golangci-lint run --fix
 
 tidy:
-	GONOSUMDB=github.com/codecomet-io,codecomet.dev GOPRIVATE=github.com/codecomet-io,codecomet.dev go mod tidy
+	GONOSUMDB=github.com/codecomet-io,go.codecomet.dev GOPRIVATE=github.com/codecomet-io,go.codecomet.dev go mod tidy
