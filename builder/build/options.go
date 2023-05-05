@@ -3,11 +3,11 @@ package build
 import (
 	"os"
 
-	"github.com/codecomet-io/go-core/log"
 	"github.com/moby/buildkit/session"
 	"github.com/moby/buildkit/session/secrets/secretsprovider"
 	"github.com/moby/buildkit/session/sshforward/sshprovider"
 	"github.com/moby/buildkit/util/entitlements"
+	"go.codecomet.dev/core/log"
 )
 
 type Entitlement = entitlements.Entitlement

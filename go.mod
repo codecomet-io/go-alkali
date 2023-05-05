@@ -1,13 +1,15 @@
-module github.com/codecomet-io/go-alkali
+module go.codecomet.dev/alkali
 
 go 1.19
 
+// replace go.codecomet.dev/alkali => ./
+
 require (
-	github.com/codecomet-io/go-core v0.0.0-20230505012935-e0a535af7713
 	github.com/docker/cli v23.0.5+incompatible
 	github.com/moby/buildkit v0.11.6
 	github.com/opencontainers/go-digest v1.0.0
 	github.com/opencontainers/image-spec v1.1.0-rc2.0.20221005185240-3a7f492d3f1b
+	go.codecomet.dev/core v0.0.0-20230505044319-e02e22faffc8
 	golang.org/x/sync v0.2.0
 )
 
@@ -47,10 +49,10 @@ require (
 	go.opentelemetry.io/otel/sdk v1.4.1 // indirect
 	go.opentelemetry.io/otel/trace v1.4.1 // indirect
 	go.opentelemetry.io/proto/otlp v0.12.0 // indirect
-	golang.org/x/crypto v0.2.0 // indirect
-	golang.org/x/net v0.4.0 // indirect
-	golang.org/x/sys v0.6.0 // indirect
-	golang.org/x/text v0.8.0 // indirect
+	golang.org/x/crypto v0.8.0 // indirect
+	golang.org/x/net v0.9.0 // indirect
+	golang.org/x/sys v0.7.0 // indirect
+	golang.org/x/text v0.9.0 // indirect
 	golang.org/x/time v0.1.0 // indirect
 	google.golang.org/genproto v0.0.0-20220706185917-7780775163c4 // indirect
 	google.golang.org/grpc v1.50.1 // indirect

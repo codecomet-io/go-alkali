@@ -3,13 +3,13 @@ package builder
 import (
 	"bytes"
 
-	"github.com/codecomet-io/go-alkali/builder"
-	"github.com/codecomet-io/go-alkali/builder/build"
-	"github.com/codecomet-io/go-alkali/builder/cache"
-	"github.com/codecomet-io/go-alkali/builder/exporter"
-	"github.com/codecomet-io/go-alkali/builder/registry"
-	"github.com/codecomet-io/go-alkali/builder/run"
-	"github.com/codecomet-io/go-alkali/machine"
+	"go.codecomet.dev/alkali/builder"
+	"go.codecomet.dev/alkali/builder/build"
+	"go.codecomet.dev/alkali/builder/cache"
+	"go.codecomet.dev/alkali/builder/exporter"
+	"go.codecomet.dev/alkali/builder/registry"
+	"go.codecomet.dev/alkali/builder/run"
+	"go.codecomet.dev/alkali/machine"
 )
 
 type Operation struct {

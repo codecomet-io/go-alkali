@@ -3,7 +3,7 @@ package builder
 import (
 	"os"
 
-	"github.com/codecomet-io/go-core/log"
+	"go.codecomet.dev/core/log"
 )
 
 func init() { //nolint:gochecknoinits

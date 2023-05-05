@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"encoding/json"
 
-	"github.com/codecomet-io/go-core/log"
 	"github.com/moby/buildkit/identity"
+	"go.codecomet.dev/core/log"
 )
 
 func New(proto *bytes.Buffer) *Data {

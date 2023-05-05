@@ -3,8 +3,8 @@ package commands
 import (
 	"context"
 
-	"github.com/codecomet-io/go-alkali/builder/builder"
 	"github.com/moby/buildkit/client"
+	"go.codecomet.dev/alkali/builder/builder"
 )
 
 func getClient(ctx context.Context, node *builder.Node) (*client.Client, error) {

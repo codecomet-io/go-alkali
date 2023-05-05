@@ -9,14 +9,14 @@ import (
 	"os"
 	"strings"
 
-	"github.com/codecomet-io/go-alkali/builder/builder"
-	"github.com/codecomet-io/go-alkali/builder/locals"
 	"github.com/moby/buildkit/client"
 	"github.com/moby/buildkit/client/llb"
 	gateway "github.com/moby/buildkit/frontend/gateway/client"
 	"github.com/moby/buildkit/solver/pb"
 	"github.com/moby/buildkit/util/progress/progresswriter"
 	digest "github.com/opencontainers/go-digest"
+	"go.codecomet.dev/alkali/builder/builder"
+	"go.codecomet.dev/alkali/builder/locals"
 	"golang.org/x/sync/errgroup"
 )
 

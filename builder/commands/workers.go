@@ -9,9 +9,9 @@ import (
 	"strings"
 	"text/tabwriter"
 
-	root "github.com/codecomet-io/go-alkali/builder"
-	"github.com/codecomet-io/go-alkali/builder/builder"
 	"github.com/moby/buildkit/client"
+	root "go.codecomet.dev/alkali/builder"
+	"go.codecomet.dev/alkali/builder/builder"
 )
 
 const defaultTabWidth = 8

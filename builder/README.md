@@ -14,10 +14,10 @@ import (
 	"context"
 	"bytes"
 
-	"github.com/codecomet-io/go-core/log"
-	"github.com/codecomet-io/go-alkali/builder/builder"
-	"github.com/codecomet-io/go-alkali/builder/commands"
-	"github.com/codecomet-io/go-alkali/builder/locals"
+	"go.codecomet.dev/core/log"
+	"go.codecomet.dev/alkali/builder/builder"
+	"go.codecomet.dev/alkali/builder/commands"
+	"go.codecomet.dev/alkali/builder/locals"
 )
 
 func main() {

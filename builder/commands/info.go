@@ -7,7 +7,7 @@ import (
 	"os"
 	"text/tabwriter"
 
-	"github.com/codecomet-io/go-alkali/builder/builder"
+	"go.codecomet.dev/alkali/builder/builder"
 )
 
 func Info(ctx context.Context, node *builder.Node, writer io.Writer, format string) error {

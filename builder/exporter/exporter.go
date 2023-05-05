@@ -7,8 +7,8 @@ import (
 	"path"
 	"strings"
 
-	"github.com/codecomet-io/go-alkali/builder"
 	"github.com/moby/buildkit/client"
+	"go.codecomet.dev/alkali/builder"
 )
 
 type exporterType string
