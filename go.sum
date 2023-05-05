@@ -174,6 +174,8 @@ github.com/tonistiigi/vt100 v0.0.0-20210615222946-8066bb97264f/go.mod h1:ulncasL
 github.com/vbatts/tar-split v0.11.2 h1:Via6XqJr0hceW4wff3QRzD5gAk/tatMw/4ZA7cTlIME=
 github.com/yuin/goldmark v1.1.27/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=
 github.com/yuin/goldmark v1.2.1/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=
+go.codecomet.dev/containers v0.0.0-20230505180848-6a66b56fb3ea h1:69a8P3PKu8K5nJDc/YlNjVlUBrPtkdl0PnlPLgzsexQ=
+go.codecomet.dev/containers v0.0.0-20230505180848-6a66b56fb3ea/go.mod h1:MjtKir3ncY1M8UzrV8Ob6VlgCw5DWyg63N5iEMHX6bU=
 go.codecomet.dev/core v0.0.0-20230505164704-15c74323489f h1:hjgNmG7wKjYEtpcBc6GwZ10gZ7z1k7Td0dlUzhOuI1M=
 go.codecomet.dev/core v0.0.0-20230505164704-15c74323489f/go.mod h1:GSYHpEXX3jnByOco/2Geskg+uE7DYQEzWk38XRj/zyk=
 go.opencensus.io v0.23.0 h1:gqCw0LfLxScz8irSi8exQc7fyQ0fKQU/qnC/X8+V/1M=

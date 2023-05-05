@@ -7,7 +7,7 @@ import (
 
 	"github.com/moby/buildkit/client/llb"
 	"github.com/moby/buildkit/solver/pb"
-	"github.com/opencontainers/go-digest"
+	"go.codecomet.dev/containers/digest"
 )
 
 type llbOp struct {

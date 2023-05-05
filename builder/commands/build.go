@@ -14,8 +14,8 @@ import (
 	gateway "github.com/moby/buildkit/frontend/gateway/client"
 	"github.com/moby/buildkit/solver/pb"
 	"github.com/moby/buildkit/util/progress/progresswriter"
-	digest "github.com/opencontainers/go-digest"
 	"go.codecomet.dev/alkali/builder/builder"
+	"go.codecomet.dev/containers/digest"
 	"golang.org/x/sync/errgroup"
 )
 

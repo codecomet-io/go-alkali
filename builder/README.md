@@ -17,16 +17,18 @@ import (
 	"go.codecomet.dev/core/log"
 	"go.codecomet.dev/alkali/builder/builder"
 	"go.codecomet.dev/alkali/builder/commands"
-	"go.codecomet.dev/alkali/builder/locals"
 )
 
 func main() {
 	// A protobuf message (eg: a marshalled llb.State)
 	var proto *bytes.Buffer
 
-	locals.Reset()
-	bo := builder.NewOperation("socket_path")
-	bo.Ingest(proto)
+    // Corresponding local filesystem keys/path
+	var locals map[string]string
+    // eg: locals["key"] = "local path"
+
+    bo := builder.NewOperation("socket_path")
+	bo.Ingest(proto, locals)
 
 	_, err := commands.Run(context.Background(), bo)
 	if err != nil {

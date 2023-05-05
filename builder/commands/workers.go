@@ -10,8 +10,8 @@ import (
 	"text/tabwriter"
 
 	"github.com/moby/buildkit/client"
-	root "go.codecomet.dev/alkali/builder"
 	"go.codecomet.dev/alkali/builder/builder"
+	"go.codecomet.dev/containers/platform"
 )
 
 const defaultTabWidth = 8
@@ -116,7 +116,7 @@ func sortedKeys(m map[string]string) []string {
 	return sorted
 }
 
-func joinPlatforms(p []root.Platform) string {
+func joinPlatforms(p []platform.Platform) string {
 	str := make([]string, 0, len(p))
 	for _, pp := range p {
 		// XXX normalizing and formatting here makes no sense
