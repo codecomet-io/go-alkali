@@ -22,6 +22,7 @@ type Data struct {
 	Trace    *bytes.Buffer
 	Protobuf *bytes.Buffer
 	Meta     *bytes.Buffer
+	Locals   map[string]string
 }
 
 func (o *Data) GetJSON() *bytes.Buffer {

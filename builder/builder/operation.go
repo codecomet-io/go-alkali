@@ -24,8 +24,9 @@ type Operation struct {
 	Progress string
 }
 
-func (o *Operation) Ingest(proto *bytes.Buffer) {
+func (o *Operation) Ingest(proto *bytes.Buffer, locals map[string]string) {
 	o.Run = run.New(proto)
+	o.Run.Locals = locals
 }
 
 func NewOperation(path string) *Operation {

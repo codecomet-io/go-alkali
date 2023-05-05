@@ -16,7 +16,6 @@ import (
 	"github.com/moby/buildkit/util/progress/progresswriter"
 	digest "github.com/opencontainers/go-digest"
 	"go.codecomet.dev/alkali/builder/builder"
-	"go.codecomet.dev/alkali/builder/locals"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -89,7 +88,7 @@ func Run(ctx context.Context, buildOp *builder.Operation) (map[string]string, er
 		Session:             attachable,
 		AllowedEntitlements: buildOp.Options.GetEntitlements(),
 		Ref:                 buildOp.Run.ID,
-		LocalDirs:           locals.Dump(),
+		LocalDirs:           buildOp.Run.Locals,
 	}
 
 	// Get tracer buffer
