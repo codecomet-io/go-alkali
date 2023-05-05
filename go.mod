@@ -2,14 +2,12 @@ module go.codecomet.dev/alkali
 
 go 1.19
 
-// replace go.codecomet.dev/alkali => ./
-
 require (
 	github.com/docker/cli v23.0.5+incompatible
 	github.com/moby/buildkit v0.11.6
 	github.com/opencontainers/go-digest v1.0.0
 	github.com/opencontainers/image-spec v1.1.0-rc2.0.20221005185240-3a7f492d3f1b
-	go.codecomet.dev/core v0.0.0-20230505044319-e02e22faffc8
+	go.codecomet.dev/core v0.0.0-20230505164704-15c74323489f
 	golang.org/x/sync v0.2.0
 )
 
