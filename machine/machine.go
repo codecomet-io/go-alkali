@@ -4,19 +4,15 @@ import (
 	"fmt"
 	"net/url"
 	"os"
-	"path/filepath"
-
-	"github.com/codecomet-io/isovaline/isovaline/config"
 )
 
-// XXX home and runner name should be passed down from the implementor side to remove the dependency on isovaline.
-func GetSocket() *url.URL {
+func GetSocket(path string) *url.URL {
 	sock := os.Getenv("_UNSTABLE_CODECOMET_CUSTOM_BUILDER_SOCKET")
 	if sock == "" {
-		// sock = lima_cli.New(filepath.Join(config.Get().GetRunRoot(), "vm"), "runner").GetSock()
-		sock = fmt.Sprintf("unix://%s/%s/sock/buildkitd.sock", filepath.Join(config.Get().GetRunRoot(), "vm"), "runner")
+		// Relationship to the way isovaline creates the VM is finicky
+		// But then, shelling out is not necessarily good either
+		sock = fmt.Sprintf("unix://%s", path)
 	}
-
 	u, _ := url.Parse(sock)
 
 	return u

@@ -28,11 +28,11 @@ func (o *Operation) Ingest(proto *bytes.Buffer) {
 	o.Run = run.New(proto)
 }
 
-func NewOperation() *Operation {
+func NewOperation(path string) *Operation {
 	return &Operation{
 		Node: &Node{
 			ConnectionTimeout: builder.DefaultConnectionTimeout,
-			Address:           machine.GetSocket(),
+			Address:           machine.GetSocket(path),
 		},
 		Credentials: registry.New(),
 		Options:     build.New(),

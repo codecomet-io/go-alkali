@@ -25,10 +25,10 @@ func main() {
 	var proto *bytes.Buffer
 
 	locals.Reset()
-	bo := builder.NewOperation()
+	bo := builder.NewOperation("socket_path")
 	bo.Ingest(proto)
 
-	err := commands.Run(context.Background(), bo)
+	_, err := commands.Run(context.Background(), bo)
 	if err != nil {
 		log.Error().Err(err).Msg("failed to run pipeline")
 	}
@@ -42,3 +42,12 @@ Current design is work in progress, specifically the `BuildOperation`
 top-level struct. `Run` and `Export` clearly belong to a notion of one operation,
 while the rest belongs to a `controller`.
 Furthermore, `Secrets` (inside `Options`) is also run-dependent.
+
+### About init
+
+Unfortunately, buildkit does:
+* use environment variables as the only mean to customize certain things (eg: `BUILDKIT_COLORS`)
+* also buildkit is setting these from the environment inside an `init()` function
+
+This makes it impossible to override them, unless we manipulate these env variables *before* the `init()` function is called.
+Given go import ordering...

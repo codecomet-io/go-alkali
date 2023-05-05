@@ -6,8 +6,4 @@ This is not meant to provide binaries though (see [Isovaline](https://github.com
 
 ## Builder
 
-Provides a SDK to implement a buildkitd client.
-
-## Caveats & TODO
-
-* remove the dependency on isovaline (eg: pass home and runner name instead of depending on buried down config.Get)
+Provides a SDK to implement a buildkit client.
