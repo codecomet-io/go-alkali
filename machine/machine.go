@@ -13,6 +13,7 @@ func GetSocket(path string) *url.URL {
 		// But then, shelling out is not necessarily good either
 		sock = fmt.Sprintf("unix://%s", path)
 	}
+
 	u, _ := url.Parse(sock)
 
 	return u
