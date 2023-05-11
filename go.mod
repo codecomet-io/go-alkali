@@ -3,10 +3,10 @@ module go.codecomet.dev/alkali
 go 1.19
 
 require (
-	github.com/docker/cli v23.0.5+incompatible
+	github.com/docker/cli v23.0.6+incompatible
 	github.com/moby/buildkit v0.11.6
-	go.codecomet.dev/containers v0.0.0-20230505180848-6a66b56fb3ea
-	go.codecomet.dev/core v0.0.0-20230505212359-946657eb5e0f
+	go.codecomet.dev/containers v0.0.0-20230505190647-7cfea623acf8
+	go.codecomet.dev/core v0.0.0-20230511064101-cf29f4227550
 	golang.org/x/sync v0.2.0
 )
 
@@ -19,8 +19,8 @@ require (
 	github.com/docker/distribution v2.8.1+incompatible // indirect
 	github.com/docker/docker v23.0.0-rc.1+incompatible // indirect
 	github.com/docker/docker-credential-helpers v0.7.0 // indirect
-	github.com/getsentry/sentry-go v0.20.0 // indirect
-	github.com/getsentry/sentry-go/otel v0.20.0 // indirect
+	github.com/getsentry/sentry-go v0.21.0 // indirect
+	github.com/getsentry/sentry-go/otel v0.21.0 // indirect
 	github.com/go-logr/logr v1.2.4 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/gofrs/flock v0.8.1 // indirect
@@ -51,10 +51,10 @@ require (
 	go.opentelemetry.io/otel/sdk v1.15.1 // indirect
 	go.opentelemetry.io/otel/trace v1.15.1 // indirect
 	go.opentelemetry.io/proto/otlp v0.12.0 // indirect
-	golang.org/x/crypto v0.8.0 // indirect
-	golang.org/x/net v0.9.0 // indirect
+	golang.org/x/crypto v0.7.0 // indirect
+	golang.org/x/net v0.8.0 // indirect
 	golang.org/x/sys v0.7.0 // indirect
-	golang.org/x/text v0.9.0 // indirect
+	golang.org/x/text v0.8.0 // indirect
 	golang.org/x/time v0.3.0 // indirect
 	google.golang.org/genproto v0.0.0-20220706185917-7780775163c4 // indirect
 	google.golang.org/grpc v1.50.1 // indirect
