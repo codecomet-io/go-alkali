@@ -183,8 +183,8 @@ github.com/yuin/goldmark v1.1.27/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9de
 github.com/yuin/goldmark v1.2.1/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=
 go.codecomet.dev/containers v0.0.0-20230505190647-7cfea623acf8 h1:axCtUwchZXTgzGffQSepBiQvu7PA5jRiDcdzkAmFPGU=
 go.codecomet.dev/containers v0.0.0-20230505190647-7cfea623acf8/go.mod h1:MjtKir3ncY1M8UzrV8Ob6VlgCw5DWyg63N5iEMHX6bU=
-go.codecomet.dev/core v0.0.0-20230511064101-cf29f4227550 h1:l6/vzgaA+bMdribfWP4s36WWYaQjRcOuW11GWirp3zI=
-go.codecomet.dev/core v0.0.0-20230511064101-cf29f4227550/go.mod h1:O2BF3Wo2cuObT7eLUwj+xMEKWpAeZ7U+NccO3MgVNtk=
+go.codecomet.dev/core v0.0.0-20230515193029-f3edf17f6526 h1:bjYwvKn5Fb45O8AQLlVHMjZgyXT27ALK+BrlCEt43zg=
+go.codecomet.dev/core v0.0.0-20230515193029-f3edf17f6526/go.mod h1:O2BF3Wo2cuObT7eLUwj+xMEKWpAeZ7U+NccO3MgVNtk=
 go.opencensus.io v0.23.0 h1:gqCw0LfLxScz8irSi8exQc7fyQ0fKQU/qnC/X8+V/1M=
 go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.29.0 h1:n9b7AAdbQtQ0k9dm0Dm2/KUcUqtG8i2O15KzNaDze8c=
 go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.29.0/go.mod h1:LsankqVDx4W+RhZNA5uWarULII/MBhF5qwCYxTuyXjs=

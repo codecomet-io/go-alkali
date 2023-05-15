@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"github.com/moby/buildkit/client"
-	"go.codecomet.dev/alkali/builder"
+	"go.codecomet.dev/core/config"
 )
 
 type exporterType string
@@ -53,7 +53,7 @@ func (o *Local) GetEntry() client.ExportEntry {
 
 		clientExport.OutputDir = ""
 		clientExport.Output = func(m map[string]string) (io.WriteCloser, error) {
-			if err := os.MkdirAll(path.Dir(o.Path), builder.DefaultDirPerms); err != nil {
+			if err := os.MkdirAll(path.Dir(o.Path), config.DefaultDirPerms); err != nil {
 				return nil, err
 			}
 
