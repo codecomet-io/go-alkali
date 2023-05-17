@@ -11,7 +11,6 @@ import (
 func getClient(ctx context.Context, node *builder.Node) (*client.Client, error) {
 	opts := []client.ClientOpt{
 		client.WithFailFast(),
-		//nolint:godox
 		// TODO: investigate tracing in detail
 		// client.WithTracerDelegate
 		client.WithTracerProvider(telemetry.GetTracerProvider()),

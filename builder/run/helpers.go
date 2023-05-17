@@ -55,7 +55,6 @@ func toDOT(reader io.Reader, writer io.Writer) error {
 		return err
 	}
 
-	//nolint:godox
 	// TODO: print OpMetadata
 	fmt.Fprintln(writer, "digraph {")
 	defer fmt.Fprintln(writer, "}")
