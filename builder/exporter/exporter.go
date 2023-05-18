@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/moby/buildkit/client"
+	"go.codecomet.dev/core/filesystem"
 )
 
 type exporterType string
@@ -54,7 +55,7 @@ func (o *Local) GetEntry() client.ExportEntry {
 		clientExport.Output = func(m map[string]string) (io.WriteCloser, error) {
 			// XXX this is problematic right now as this is not using the config permissions
 			// Still wondering if this should be static instead
-			if err := os.MkdirAll(path.Dir(o.Path), 0o755); err != nil {
+			if err := os.MkdirAll(path.Dir(o.Path), filesystem.DirPermissionsDefault); err != nil {
 				return nil, err
 			}
 
