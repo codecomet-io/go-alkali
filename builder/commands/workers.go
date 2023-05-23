@@ -11,20 +11,30 @@ import (
 
 	"github.com/moby/buildkit/client"
 	"go.codecomet.dev/alkali/builder/builder"
+	"go.codecomet.dev/alkali/builder/types"
 	"go.codecomet.dev/containers/platform"
 )
 
 const defaultTabWidth = 8
 
-func Workers(ctx context.Context, node *builder.Node, writer io.Writer, verbose bool,
-	format string, filter []string,
-) error {
+func GetWorkers(ctx context.Context, node *builder.Node, filter []string) ([]*types.WorkerInfo, error) {
 	cli, err := getClient(ctx, node)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	workers, err := cli.ListWorkers(ctx, client.WithFilter(filter))
+	if err != nil {
+		return nil, err
+	}
+
+	return workers, nil
+}
+
+func PrintWorkers(ctx context.Context, node *builder.Node, filter []string,
+	writer io.Writer, verbose bool, format string,
+) error {
+	workers, err := GetWorkers(ctx, node, filter)
 	if err != nil {
 		return err
 	}

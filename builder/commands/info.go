@@ -8,15 +8,25 @@ import (
 	"text/tabwriter"
 
 	"go.codecomet.dev/alkali/builder/builder"
+	"go.codecomet.dev/alkali/builder/types"
 )
 
-func Info(ctx context.Context, node *builder.Node, writer io.Writer, format string) error {
+func GetInfo(ctx context.Context, node *builder.Node) (*types.Info, error) {
 	client, err := getClient(ctx, node)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	res, err := client.Info(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return res, err
+}
+
+func PrintInfo(ctx context.Context, node *builder.Node, writer io.Writer, format string) error {
+	res, err := GetInfo(ctx, node)
 	if err != nil {
 		return err
 	}
