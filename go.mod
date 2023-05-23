@@ -3,10 +3,10 @@ module go.codecomet.dev/alkali
 go 1.19
 
 require (
-	github.com/docker/cli v24.0.0+incompatible
+	github.com/docker/cli v24.0.1+incompatible
 	github.com/moby/buildkit v0.11.6
 	go.codecomet.dev/containers v0.0.0-20230518210341-2bc4a43b9c54
-	go.codecomet.dev/core v0.0.0-20230518204046-07987e6e8f0d
+	go.codecomet.dev/core v0.0.0-20230523023219-d6073b26dd87
 	golang.org/x/sync v0.2.0
 )
 

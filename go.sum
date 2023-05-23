@@ -36,8 +36,8 @@ github.com/creack/pty v1.1.9/go.mod h1:oKZEueFk5CKHvIhNR5MUki03XCEU+Q6VDXinZuGJ3
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
-github.com/docker/cli v24.0.0+incompatible h1:0+1VshNwBQzQAx9lOl+OYCTCEAD8fKs/qeXMx3O0wqM=
-github.com/docker/cli v24.0.0+incompatible/go.mod h1:JLrzqnKDaYBop7H2jaqPtU4hHvMKP+vjCwu2uszcLI8=
+github.com/docker/cli v24.0.1+incompatible h1:uVl5Xv/39kZJpDo9VaktTOYBc702sdYYF33FqwUG/dM=
+github.com/docker/cli v24.0.1+incompatible/go.mod h1:JLrzqnKDaYBop7H2jaqPtU4hHvMKP+vjCwu2uszcLI8=
 github.com/docker/distribution v2.8.1+incompatible h1:Q50tZOPR6T/hjNsyc9g8/syEs6bk8XXApsHjKukMl68=
 github.com/docker/distribution v2.8.1+incompatible/go.mod h1:J2gT2udsDAN96Uj4KfcMRqY0/ypR+oyYUYmja8H+y+w=
 github.com/docker/docker v23.0.0-rc.1+incompatible h1:Dmn88McWuHc7BSNN1s6RtfhMmt6ZPQAYUEf7FhqpiQI=
@@ -183,8 +183,8 @@ github.com/yuin/goldmark v1.1.27/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9de
 github.com/yuin/goldmark v1.2.1/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=
 go.codecomet.dev/containers v0.0.0-20230518210341-2bc4a43b9c54 h1:EPWg0RbCrhaxrDXaiWYUZjTyG6zOuS1XR9WtshCyVEQ=
 go.codecomet.dev/containers v0.0.0-20230518210341-2bc4a43b9c54/go.mod h1:MjtKir3ncY1M8UzrV8Ob6VlgCw5DWyg63N5iEMHX6bU=
-go.codecomet.dev/core v0.0.0-20230518204046-07987e6e8f0d h1:vw/mcXinZWBG+a9xRJKrVaX7iqlgGIP2HW6Yq/Ust1U=
-go.codecomet.dev/core v0.0.0-20230518204046-07987e6e8f0d/go.mod h1:O2BF3Wo2cuObT7eLUwj+xMEKWpAeZ7U+NccO3MgVNtk=
+go.codecomet.dev/core v0.0.0-20230523023219-d6073b26dd87 h1:cFtPtSmG06x29Cdr1wmASs71eTtBl8LMwMJF4IjHuow=
+go.codecomet.dev/core v0.0.0-20230523023219-d6073b26dd87/go.mod h1:O2BF3Wo2cuObT7eLUwj+xMEKWpAeZ7U+NccO3MgVNtk=
 go.opencensus.io v0.23.0 h1:gqCw0LfLxScz8irSi8exQc7fyQ0fKQU/qnC/X8+V/1M=
 go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.29.0 h1:n9b7AAdbQtQ0k9dm0Dm2/KUcUqtG8i2O15KzNaDze8c=
 go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.29.0/go.mod h1:LsankqVDx4W+RhZNA5uWarULII/MBhF5qwCYxTuyXjs=
