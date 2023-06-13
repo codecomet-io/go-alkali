@@ -61,11 +61,11 @@ func read(reader io.Reader, noCache bool) (*llb.Definition, error) {
 	return &def, nil
 }
 
-func Run(ctx context.Context, buildOp *builder.Operation) (map[string]string, error) { //nolint:gocognit
+func Run(ctx context.Context, buildOp *builder.Operation) (map[string]string, []*client.SolveStatus, error) { //nolint:gocognit
 	// Try and get a client
 	cli, err := getClient(ctx, buildOp.Node)
 	if err != nil {
-		return nil, fmt.Errorf("builder node down: %w", err)
+		return nil, nil, fmt.Errorf("builder node down: %w", err)
 	}
 
 	// Get exporters
@@ -102,25 +102,27 @@ func Run(ctx context.Context, buildOp *builder.Operation) (map[string]string, er
 
 	def, err = read(buildOp.Run.Protobuf, buildOp.Cache.NoCache)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	if len(def.Def) == 0 {
-		return nil, errEmptyDefinition
+		return nil, nil, errEmptyDefinition
 	}
 
-	// not using shared context to not disrupt display but let is finish reporting errors
+	// not using shared context to not disrupt display but let it finish reporting errors
 	progWriter, err := progresswriter.NewPrinter(context.TODO(), os.Stderr, buildOp.Progress) //nolint:contextcheck
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
+	traces := []*client.SolveStatus{}
 	if traceEnc != nil {
 		traceCh := make(chan *client.SolveStatus)
 		progWriter = progresswriter.Tee(progWriter, traceCh)
 
 		errGroup.Go(func() error {
 			for s := range traceCh {
+				traces = append(traces, s)
 				if err := traceEnc.Encode(s); err != nil {
 					return err
 				}
@@ -216,7 +218,7 @@ func Run(ctx context.Context, buildOp *builder.Operation) (map[string]string, er
 	})
 
 	if err := errGroup.Wait(); err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	if txt, ok := subMetadata["result.txt"]; ok {
@@ -229,5 +231,5 @@ func Run(ctx context.Context, buildOp *builder.Operation) (map[string]string, er
 		}
 	}
 
-	return exportResponse, nil
+	return exportResponse, traces, nil
 }

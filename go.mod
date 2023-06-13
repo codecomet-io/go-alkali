@@ -6,7 +6,7 @@ require (
 	github.com/docker/cli v24.0.1+incompatible
 	github.com/moby/buildkit v0.11.6
 	go.codecomet.dev/containers v0.0.0-20230518210341-2bc4a43b9c54
-	go.codecomet.dev/core v0.0.0-20230523023219-d6073b26dd87
+	go.codecomet.dev/core v0.0.0-20230613214154-1e4d30c3fec1
 	golang.org/x/sync v0.2.0
 )
 
